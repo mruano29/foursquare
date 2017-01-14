@@ -8,7 +8,6 @@ var config = {
     filename: 'bundle.js',
     publicPath: "/build/"
   },
-
   module: {
     loaders: [{
           test:    /\.(js|jsx)$/,
