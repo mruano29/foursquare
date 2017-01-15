@@ -13,6 +13,7 @@ export default React.createClass({
 	getInitialState() {
 		return {
 			data: {},
+			errorMsg: '',
 			isValid: true,
 			value: ''
 		}
@@ -31,16 +32,31 @@ export default React.createClass({
 
 	    const date = moment().format('YYYYMMDD')
 
+	    if(searchPlace.length === 0) {
+	    	this.setState({
+	    		errorMsg: 'Please, add a place to search',
+	    		isValid: false
+	    	})
+
+	    	event.preventDefault()
+	    	
+	    	return null
+	    }
+
 		request.get('https://api.foursquare.com/v2/venues/explore/?near=' + searchPlace + '&venuePhotos=1&section=food&client_id=' + clientId + '&client_secret=' + clientSecret + '&v=' + date + '&m=foursquare')
 			.accept('json')
 			.end((err, res) => {
 	  			if(err) {
-	  				this.setState({isValid: false})
-	  				return
+	  				this.setState({
+	  					errorMsg: 'Something went wrong, please try again',
+	  					isValid: false
+	  				})
+	  				return null
 	  			}
 
 	        	this.setState({
 	        		data: res.body,
+	        		errorMsg: '',
 	        		isValid: true
 	        	})
 		        
@@ -51,9 +67,8 @@ export default React.createClass({
 
 	dataFormatter(data) {
 
-		console.log('data', data)
-
 		if(_.size(data.response.groups[0].items) < 1) {
+
 			this.setState({isValid:false})
 			return null
 		}
@@ -114,9 +129,9 @@ export default React.createClass({
 		      			{this.dataFormatter(this.state.data)}
 	      			</div>
       			}
-      			{ !this.state.isValid &&
+      			{!this.state.isValid &&
       				<div className="error-msg">
-      					Something went wrong, please try again
+      					{this.state.errorMsg}
       				</div>
       			}
 	  		</div>
