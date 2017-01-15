@@ -11,7 +11,7 @@ $unit: 12px;
 	padding: box-size(2);
 	min-width: box-size(66);
 
-	font-family: "helvetica-light";
+	font-family: "helvetica-light", "arial";
 	color: #444;
 
 	.form {
@@ -57,14 +57,11 @@ $unit: 12px;
 	.card-wrapper {
 
 		display: flex;
-		justify-content: space-between;
+		justify-content: center;
 		flex-wrap: wrap;
-
-
 
 		.card {
 
-			height: box-size(27);
 			width: box-size(20);
 			padding: box-size();
 			border-radius: box-size();
@@ -93,5 +90,13 @@ $unit: 12px;
 				}
 			}
 		}
+	}
+
+	.error-msg {
+
+		margin-top: box-size();
+
+		font-size: box-size(3);
+		color: #ca7f7f;
 	}
 }

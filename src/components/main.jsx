@@ -1,8 +1,9 @@
 import _ from 'lodash'
 import React from 'react'
 import request from 'superagent'
-import Utils from '../utils/utils.jsx'
+import moment from 'moment'
 import Icon from '../assets/magnifying-glass.jsx'
+import Config from './config.json'
 import './style.scss'
 
 export default React.createClass({
@@ -12,6 +13,7 @@ export default React.createClass({
 	getInitialState() {
 		return {
 			data: {},
+			isValid: true,
 			value: ''
 		}
 	},
@@ -23,21 +25,24 @@ export default React.createClass({
 
 	fetchFucntion(event) {
 
-		//@todo create a config file. take a look to keep the clientSecret secret
-		const clientId = '4YHTVOOOMXL0CONFQHUTP3YXMRYNTKI4YNTIFJYSNYBFW32M'
-	    const clientSecret = '2OQ4UTBFOC5XQXPYUHJN5RTY4UL4AGT5WZHZKSI0RHRSKVSH'
+		const clientId = Config.clientId
+	    const clientSecret = Config.clientSecret
 	    const searchPlace = this.state.value
 
-	    //@todo time utils is not working, so the time now is hardcoded. Repair!!!!!
+	    const date = moment().format('YYYYMMDD')
 
-		request.get('https://api.foursquare.com/v2/venues/explore/?near=' + searchPlace + '&venuePhotos=1&section=food&client_id=' + clientId + '&client_secret=' + clientSecret + '&v=20170114&m=foursquare')
+		request.get('https://api.foursquare.com/v2/venues/explore/?near=' + searchPlace + '&venuePhotos=1&section=food&client_id=' + clientId + '&client_secret=' + clientSecret + '&v=' + date + '&m=foursquare')
 			.accept('json')
 			.end((err, res) => {
-	  			if(err) return
+	  			if(err) {
+	  				this.setState({isValid: false})
+	  				return
+	  			}
 
-				let result = res.body
-	        	// console.log('res.body', res.body)
-	        	this.setState({data: res.body})
+	        	this.setState({
+	        		data: res.body,
+	        		isValid: true
+	        	})
 		        
 			  })
 	
@@ -48,10 +53,21 @@ export default React.createClass({
 
 		console.log('data', data)
 
+		if(_.size(data.response.groups[0].items) < 1) {
+			this.setState({isValid:false})
+			return null
+		}
+
 		const items = _.map(data.response.groups[0].items, item => {
 
-			const size = '236x236'
-			const imgUrl= item.venue.featuredPhotos.items[0].prefix + size + item.venue.featuredPhotos.items[0].suffix
+			const size = Config.imagePreviewSize
+			const imgUrl= _.size(item.venue.featuredPhotos) > 0 
+				? item.venue.featuredPhotos.items[0].prefix + size + item.venue.featuredPhotos.items[0].suffix
+				: 'https://unsplash.it/236/236/?blur'
+
+			const categories = _.size(item.venue.categories) > 0
+				? item.venue.categories[0].name
+				: ''
 
 			const out = <div key={item.referralId} className="card">
 							<img src={imgUrl} className="card-img"/>
@@ -60,7 +76,9 @@ export default React.createClass({
 									<div className="card-header">{item.venue.name}</div>
 									<div>{item.venue.rating}</div>
 								</div>
-								<div>{item.venue.categories[0].name}</div>
+								<div>{categories}</div>
+								<div>{item.venue.location.address}</div>
+								<div>{item.venue.location.city}</div>
 							</div>
 						</div>
 
@@ -91,10 +109,15 @@ export default React.createClass({
 	        		</button>
 		      	</form>
 
-		      	{_.size(this.state.data) > 0 && 
+		      	{_.size(this.state.data) > 0 && this.state.isValid &&
 		      		<div className="card-wrapper">
 		      			{this.dataFormatter(this.state.data)}
 	      			</div>
+      			}
+      			{ !this.state.isValid &&
+      				<div className="error-msg">
+      					Something went wrong, please try again
+      				</div>
       			}
 	  		</div>
     	)
