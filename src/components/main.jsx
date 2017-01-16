@@ -43,7 +43,7 @@ export default React.createClass({
 	    	return null
 	    }
 
-		request.get('https://api.foursquare.com/v2/venues/explore/?near=' + searchPlace + '&venuePhotos=1&section=food&client_id=' + clientId + '&client_secret=' + clientSecret + '&v=' + date + '&m=foursquare')
+		request.get(Config.apiEndpoint + Config.searchVenue + searchPlace + '&venuePhotos=1&client_id=' + clientId + '&client_secret=' + clientSecret + '&v=' + date + '&m=foursquare')
 			.accept('json')
 			.end((err, res) => {
 	  			if(err) {
@@ -75,10 +75,11 @@ export default React.createClass({
 
 		const items = _.map(data.response.groups[0].items, item => {
 
-			const size = Config.imagePreviewSize
+			const imageHeight = Config.imagePreviewHeight
+			const imageWidth = Config.imagePreviewWidth
 			const imgUrl= _.size(item.venue.featuredPhotos) > 0 
-				? item.venue.featuredPhotos.items[0].prefix + size + item.venue.featuredPhotos.items[0].suffix
-				: 'https://unsplash.it/236/236/?blur'
+				? item.venue.featuredPhotos.items[0].prefix + imageHeight + 'x' + imageWidth + item.venue.featuredPhotos.items[0].suffix
+				: 'https://unsplash.it/' + imageHeight + '/' + imageWidth + '/?blur'
 
 			const categories = _.size(item.venue.categories) > 0
 				? item.venue.categories[0].name

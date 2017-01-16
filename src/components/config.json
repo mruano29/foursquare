@@ -2,5 +2,9 @@
 {
   "clientId": "4YHTVOOOMXL0CONFQHUTP3YXMRYNTKI4YNTIFJYSNYBFW32M",
   "clientSecret": "2OQ4UTBFOC5XQXPYUHJN5RTY4UL4AGT5WZHZKSI0RHRSKVSH",
-  "imagePreviewSize": "236x236"  
+  "apiEndpoint": "https://api.foursquare.com/v2/",
+  "searchVenue": "venues/explore/?near=",
+
+  "imagePreviewHeight": "236",
+  "imagePreviewWidth": "236"  
 }
