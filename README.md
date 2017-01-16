@@ -9,9 +9,10 @@ git clone the project
 
 npm install
 
-run 'webpack' to generate the build. The build is bundle.js file. This file is loaded by the index.html file. 
+run 'webpack' to generate the build. The build folder contains an index.html and a bundle.js.
 
 To run localy execute 'webpack-dev-server' and the app is served in your http://localhost:8080/src/
+The build is in http://localhost:8080/build/
 
 
 ## Core libraries
